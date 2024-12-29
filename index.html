@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poker Probability Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="script.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Texas Hold'em Poker Calculator</h1>
+        <p>Calcola le probabilità di vincita in tempo reale</p>
+    </header>
+
+    <main>
+        <section id="player-setup">
+            <h2>Configurazione Giocatori</h2>
+            <label for="player-count">Numero di giocatori:</label>
+            <select id="player-count">
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+            </select>
+        </section>
+
+        <section id="card-input">
+            <h2>Inserisci le Carte</h2>
+            <div id="player-cards">
+                <h3>Carte Personali</h3>
+                <div>
+                    <label for="card1">Carta 1:</label>
+                    <input id="card1" type="text" placeholder="e.g. AH (Asso Cuori)">
+                    <label for="card2">Carta 2:</label>
+                    <input id="card2" type="text" placeholder="e.g. KD (Re Quadri)">
+                </div>
+            </div>
+
+            <div id="community-cards">
+                <h3>Carte Comuni</h3>
+                <div>
+                    <input id="community-card1" type="text" placeholder="Carta 1">
+                    <input id="community-card2" type="text" placeholder="Carta 2">
+                    <input id="community-card3" type="text" placeholder="Carta 3">
+                    <input id="community-card4" type="text" placeholder="Carta 4">
+                    <input id="community-card5" type="text" placeholder="Carta 5">
+                </div>
+            </div>
+        </section>
+
+        <section id="results">
+            <h2>Probabilità</h2>
+            <button id="calculate">Calcola Probabilità</button>
+            <div id="probabilities">
+                <p>Inserisci le carte per vedere le probabilità.</p>
+            </div>
+        </section>
+
+        <section id="notes">
+            <h2>Note sulla Mano</h2>
+            <textarea id="hand-notes" placeholder="Scrivi qui le tue note..."></textarea>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2024 Poker Calculator. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        document.getElementById("calculate").addEventListener("click", function() {
+            const playerCount = document.getElementById("player-count").value;
+            const playerCards = [
+                document.getElementById("card1").value,
+                document.getElementById("card2").value
+            ];
+            const communityCards = [
+                document.getElementById("community-card1").value,
+                document.getElementById("community-card2").value,
+                document.getElementById("community-card3").value,
+                document.getElementById("community-card4").value,
+                document.getElementById("community-card5").value
+            ].filter(card => card !== "");
+
+            const probabilities = calculateProbabilities(playerCount, playerCards, communityCards);
+            document.getElementById("probabilities").innerHTML = formatProbabilities(probabilities);
+        });
+
+        function calculateProbabilities(playerCount, playerCards, communityCards) {
+            // Placeholder: This function would use poker probability libraries.
+            return {
+                win: Math.random() * 100,
+                tie: Math.random() * 50,
+                lose: Math.random() * 50
+            };
+        }
+
+        function formatProbabilities(probabilities) {
+            return `
+                <p>Probabilità di Vincita: ${probabilities.win.toFixed(2)}%</p>
+                <p>Probabilità di Pareggio: ${probabilities.tie.toFixed(2)}%</p>
+                <p>Probabilità di Perdita: ${probabilities.lose.toFixed(2)}%</p>
+            `;
+        }
+    </script>
+</body>
+</html>
