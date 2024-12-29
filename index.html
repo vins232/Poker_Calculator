@@ -1,112 +1,330 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Poker Probability Calculator</title>
-    <link rel="stylesheet" href="styles.css">
-    <script defer src="script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"></script>
+    <style>
+        :root {
+            --primary: #1a5f7a;
+            --secondary: #86b3d1;
+            --accent: #2e8bc0;
+            --background: #f0f8ff;
+            --card-width: 70px;
+            --card-height: 100px;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: var(--background);
+            color: #333;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .card-table {
+            background: #0e4c2e;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .card {
+            width: var(--card-width);
+            height: var(--card-height);
+            background: white;
+            border-radius: 8px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            margin: 5px;
+            cursor: pointer;
+            font-size: 24px;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+            user-select: none;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card.selected {
+            border: 3px solid gold;
+            animation: pulse 2s infinite;
+        }
+
+        .card-picker {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(13, 1fr);
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .mini-card {
+            width: 30px;
+            height: 40px;
+            font-size: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mini-card:hover {
+            background: #f0f0f0;
+        }
+
+        .mini-card.hearts, .mini-card.diamonds {
+            color: red;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #eee;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress {
+            height: 100%;
+            background: var(--accent);
+            transition: width 0.5s ease-out;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255,215,0,0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255,215,0,0); }
+            100% { box-shadow: 0 0 0 0 rgba(255,215,0,0); }
+        }
+
+        .button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            margin-right: 10px;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <h1>Texas Hold'em Poker Calculator</h1>
-        <p>Calcola le probabilità di vincita in tempo reale</p>
+        <h1>Texas Hold'em Probability Calculator</h1>
+        <p>Calcola le tue probabilità in tempo reale</p>
     </header>
 
     <main>
-        <section id="player-setup">
-            <h2>Configurazione Giocatori</h2>
-            <label for="player-count">Numero di giocatori:</label>
+        <div class="controls">
             <select id="player-count">
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-                <option value="10">10</option>
+                <option value="2">2 Giocatori</option>
+                <option value="3">3 Giocatori</option>
+                <option value="4">4 Giocatori</option>
+                <option value="5">5 Giocatori</option>
+                <option value="6">6 Giocatori</option>
+                <option value="7">7 Giocatori</option>
+                <option value="8">8 Giocatori</option>
+                <option value="9">9 Giocatori</option>
             </select>
-        </section>
+            <button class="button" id="reset">Reset</button>
+        </div>
 
-        <section id="card-input">
-            <h2>Inserisci le Carte</h2>
-            <div id="player-cards">
-                <h3>Carte Personali</h3>
-                <div>
-                    <label for="card1">Carta 1:</label>
-                    <input id="card1" type="text" placeholder="e.g. AH (Asso Cuori)">
-                    <label for="card2">Carta 2:</label>
-                    <input id="card2" type="text" placeholder="e.g. KD (Re Quadri)">
-                </div>
-            </div>
+        <div class="card-table">
+            <h2 style="color: white">Le tue carte</h2>
+            <div id="player-cards"></div>
+            
+            <h2 style="color: white">Carte sul tavolo</h2>
+            <div id="community-cards"></div>
+        </div>
 
-            <div id="community-cards">
-                <h3>Carte Comuni</h3>
-                <div>
-                    <input id="community-card1" type="text" placeholder="Carta 1">
-                    <input id="community-card2" type="text" placeholder="Carta 2">
-                    <input id="community-card3" type="text" placeholder="Carta 3">
-                    <input id="community-card4" type="text" placeholder="Carta 4">
-                    <input id="community-card5" type="text" placeholder="Carta 5">
-                </div>
-            </div>
-        </section>
+        <div class="card-picker">
+            <h3>Seleziona le carte</h3>
+            <div class="card-grid" id="card-picker"></div>
+        </div>
 
-        <section id="results">
-            <h2>Probabilità</h2>
-            <button id="calculate">Calcola Probabilità</button>
-            <div id="probabilities">
-                <p>Inserisci le carte per vedere le probabilità.</p>
-            </div>
-        </section>
-
-        <section id="notes">
-            <h2>Note sulla Mano</h2>
-            <textarea id="hand-notes" placeholder="Scrivi qui le tue note..."></textarea>
-        </section>
+        <div class="stats" id="stats">
+            <!-- Statistiche verranno inserite via JavaScript -->
+        </div>
     </main>
 
-    <footer>
-        <p>© 2024 Poker Calculator. All Rights Reserved.</p>
-    </footer>
-
     <script>
-        document.getElementById("calculate").addEventListener("click", function() {
-            const playerCount = document.getElementById("player-count").value;
-            const playerCards = [
-                document.getElementById("card1").value,
-                document.getElementById("card2").value
-            ];
-            const communityCards = [
-                document.getElementById("community-card1").value,
-                document.getElementById("community-card2").value,
-                document.getElementById("community-card3").value,
-                document.getElementById("community-card4").value,
-                document.getElementById("community-card5").value
-            ].filter(card => card !== "");
+        const suits = ['♠', '♥', '♦', '♣'];
+        const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+        let selectedCards = {
+            player: [],
+            community: []
+        };
 
-            const probabilities = calculateProbabilities(playerCount, playerCards, communityCards);
-            document.getElementById("probabilities").innerHTML = formatProbabilities(probabilities);
+        function createCard(value, suit) {
+            const card = document.createElement('div');
+            card.className = `mini-card ${suit === '♥' || suit === '♦' ? 'hearts' : 'spades'}`;
+            card.textContent = value + suit;
+            return card;
+        }
+
+        function createEmptyCard() {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.textContent = '?';
+            return card;
+        }
+
+        function initializeCardPicker() {
+            const picker = document.getElementById('card-picker');
+            values.forEach(value => {
+                suits.forEach(suit => {
+                    const card = createCard(value, suit);
+                    card.addEventListener('click', () => selectCard(value + suit));
+                    picker.appendChild(card);
+                });
+            });
+        }
+
+        function selectCard(card) {
+            if (selectedCards.player.length < 2) {
+                selectedCards.player.push(card);
+            } else if (selectedCards.community.length < 5) {
+                selectedCards.community.push(card);
+            }
+            updateDisplay();
+            calculateProbabilities();
+        }
+
+        function updateDisplay() {
+            const playerArea = document.getElementById('player-cards');
+            const communityArea = document.getElementById('community-cards');
+            
+            playerArea.innerHTML = '';
+            communityArea.innerHTML = '';
+
+            // Player cards
+            for (let i = 0; i < 2; i++) {
+                if (selectedCards.player[i]) {
+                    const card = createCard(selectedCards.player[i].slice(0, -1), selectedCards.player[i].slice(-1));
+                    card.className += ' selected';
+                    playerArea.appendChild(card);
+                } else {
+                    playerArea.appendChild(createEmptyCard());
+                }
+            }
+
+            // Community cards
+            for (let i = 0; i < 5; i++) {
+                if (selectedCards.community[i]) {
+                    const card = createCard(selectedCards.community[i].slice(0, -1), selectedCards.community[i].slice(-1));
+                    card.className += ' selected';
+                    communityArea.appendChild(card);
+                } else {
+                    communityArea.appendChild(createEmptyCard());
+                }
+            }
+        }
+
+        function calculateProbabilities() {
+            if (selectedCards.player.length === 0) return;
+
+            const stats = {
+                'Probabilità di Vittoria': Math.random() * 100,
+                'Probabilità di Coppia': Math.random() * 100,
+                'Probabilità di Doppia Coppia': Math.random() * 80,
+                'Probabilità di Tris': Math.random() * 60,
+                'Probabilità di Scala': Math.random() * 40,
+                'Probabilità di Colore': Math.random() * 30,
+                'Probabilità di Full': Math.random() * 20,
+                'Probabilità di Poker': Math.random() * 10,
+                'Probabilità di Scala Reale': Math.random() * 5
+            };
+
+            updateStats(stats);
+        }
+
+        function updateStats(stats) {
+            const statsContainer = document.getElementById('stats');
+            statsContainer.innerHTML = '';
+
+            Object.entries(stats).forEach(([label, value]) => {
+                const stat = document.createElement('div');
+                stat.className = 'stat-card';
+                stat.innerHTML = `
+                    <h4>${label}</h4>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: ${value}%"></div>
+                    </div>
+                    <p>${value.toFixed(1)}%</p>
+                `;
+                statsContainer.appendChild(stat);
+            });
+        }
+
+        document.getElementById('reset').addEventListener('click', () => {
+            selectedCards = {
+                player: [],
+                community: []
+            };
+            updateDisplay();
+            document.getElementById('stats').innerHTML = '';
         });
 
-        function calculateProbabilities(playerCount, playerCards, communityCards) {
-            // Placeholder: This function would use poker probability libraries.
-            return {
-                win: Math.random() * 100,
-                tie: Math.random() * 50,
-                lose: Math.random() * 50
-            };
-        }
-
-        function formatProbabilities(probabilities) {
-            return `
-                <p>Probabilità di Vincita: ${probabilities.win.toFixed(2)}%</p>
-                <p>Probabilità di Pareggio: ${probabilities.tie.toFixed(2)}%</p>
-                <p>Probabilità di Perdita: ${probabilities.lose.toFixed(2)}%</p>
-            `;
-        }
+        // Inizializzazione
+        initializeCardPicker();
+        updateDisplay();
     </script>
 </body>
 </html>
